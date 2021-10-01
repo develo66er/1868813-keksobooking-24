@@ -1,49 +1,64 @@
-const checkRange = (from, to) => {
+const getRandomInteger = (from, to) => {
 
-  const range = to - from;
+  if (from < 0) {
 
-  if (range < 0) {
+    throw new Error('Начальное значение диапазона не может быть меньше 0');
+
+  }
+  if (to < 0) {
+
+    throw new Error('Конечное значение диапазона не может быть меньше 0');
+
+  }
+
+  if (from > to) {
 
     throw new Error('Начальное значение диапазона не может быть больше конечного');
 
   }
-  if (range === 0) {
+
+  if (from === to) {
 
     throw new Error('Начальное значение диапазона не может быть равно конечному');
+
   }
-};
 
-const getRandomInteger = (from, to) => {
-
-  try {
-
-    checkRange(from, to);
-
-    return Math.floor(Math.random() * (to - from + 1)) + from;
-
-  } catch (error) {
-
-    return error.message;
-  }
+  return Math.floor(Math.random() * (to - from + 1)) + from;
 
 };
 
-getRandomInteger(-9, -8);
+getRandomInteger(0, 1);
 
 
 const getRandomFloat = (from, to, decimalPlacesNumber) => {
-  try {
 
-    checkRange(from, to);
+  if (from < 0) {
 
-    const randomFloat = Math.random() * (to - from + 1) + from;
+    throw new Error('Начальное значение диапазона не может быть меньше 0');
 
-    return parseFloat(randomFloat.toFixed(decimalPlacesNumber));
-
-  } catch (error) {
-
-    return error.message;
   }
+
+  if (to < 0) {
+
+    throw new Error('Конечное значение диапазона не может быть меньше 0');
+
+  }
+
+  if (from > to) {
+
+    throw new Error('Начальное значение диапазона не может быть больше конечного');
+
+  }
+
+  if (from === to) {
+
+    throw new Error('Начальное значение диапазона не может быть равно конечному');
+
+  }
+
+  const randomFloat = Math.random() * (to - from + 1) + from;
+
+  return parseFloat(randomFloat.toFixed(decimalPlacesNumber));
 
 };
 
