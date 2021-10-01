@@ -15,12 +15,11 @@ const getRandomInteger = (from, to) => {
     throw new Error('Начальное значение диапазона не может быть равно конечному');
   }
 
-  return Math.floor(Math.random() * (to - from + 1)) + from;
+  return Math.floor(Math.random() * (to - from + 1) + from);
 
 };
 
 getRandomInteger(0, 1);
-
 
 const getRandomFloat = (from, to, decimalPlacesNumber) => {
 
@@ -46,4 +45,4 @@ const getRandomFloat = (from, to, decimalPlacesNumber) => {
 
 };
 
-getRandomFloat(2, 8, 2);
+getRandomFloat(1.2, 2, 2);
