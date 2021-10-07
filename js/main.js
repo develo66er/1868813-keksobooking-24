@@ -1,3 +1,35 @@
+
+const MAX_PRICE = 1000;
+
+const MAX_GUESTS_NUMBER = 100;
+
+const MAX_ROOMS_NUMBER = 100;
+
+const TITLES_ARRAY = ['классная квартирка', 'шикарная квартирка в центре',
+  'просторная квартира', '1 комнатная квартира',
+  'квартира- студия', 'просторный домик',
+  'дом почти даром', 'дом с видом на парк', 'двухэтажный дом',
+  'отель мечты', 'шикарный дворец',
+  'удобное бунгало', 'вип отель'];
+
+const DESCRIPTIONS_ARRAY = ['по выгодной цене',
+  'красивый вид из окна', 'удобная и развитая инфраструктура',
+  'рядом поликлиника, детский сад и школа', 'хорошие соседи',
+  'рядом детская площадка и бассейн', 'спокойный район', 'чистый двор'];
+
+const AVATAR_NUMBERS_ARRAY = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
+
+const TYPES = ['palace', 'flat', 'house', 'bungalow', 'hotel'];
+
+const CHECKS = ['12:00', '13:00', '14:00'];
+
+const POSSIBLE_FEATURE_VALUES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+
+const POSSIBLE_PHOTO_PATHS = ['https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/duonguyen-8LrGtIxxa4w.jpg'
+  , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg'
+  , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'];
+
+
 const getRandomInteger = (from, to) => {
 
   if (from < 0) {
@@ -47,44 +79,45 @@ const getRandomFloat = (from, to, decimalPlacesNumber) => {
 
 getRandomFloat(1.2, 2, 2);
 
-const createRandomAuthor = (avatarNumbersArray) => {
+const createRandomAuthor = () => {
 
-  const author = {};
+  const index = getRandomInteger(0, AVATAR_NUMBERS_ARRAY.length - 1);
 
-  const index = getRandomInteger(0, avatarNumbersArray.length - 1);
+  const number = AVATAR_NUMBERS_ARRAY.splice(index, 1);
 
-  const number = avatarNumbersArray.splice(index, 1);
+  return {
 
-  author.avatar = `img/avatars/user${number}.png`;
+    avatar: `img/avatars/user${number}.png`,
 
-  return author;
+  };
 
 };
 
 const createType = () => {
 
-  const types = ['palace', 'flat', 'house', 'bungalow', 'hotel'];
+  const typesCopy = TYPES.slice();
 
   const typeIndex = getRandomInteger(0, 4);
 
-  return types[typeIndex];
+  return typesCopy[typeIndex];
 
 };
 
 const createChecks = () => {
 
-  const checks = ['12:00', '13:00', '14:00'];
+  const checksCopy = CHECKS.slice();
 
-  const checkIndex = getRandomInteger(0, 3);
+  const checkIndex = getRandomInteger(0, checksCopy.length-1);
 
-  return checks[checkIndex];
+  return checksCopy[checkIndex];
 
 };
 
 const createFeatures = () => {
-  const possibleFeaturesValues = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
-  let possibleFeaturesLength = possibleFeaturesValues.length;
+  const possibleFeaturesValuesCopy = POSSIBLE_FEATURE_VALUES.slice();
+
+  let possibleFeaturesLength = possibleFeaturesValuesCopy.length;
 
   const resultingFeaturesLength = getRandomInteger(1, 6);
 
@@ -94,7 +127,7 @@ const createFeatures = () => {
 
     const possibleFeatureIndex = getRandomInteger(0, --possibleFeaturesLength);
 
-    features.push(possibleFeaturesValues.splice(possibleFeatureIndex, 1));
+    features.push(possibleFeaturesValuesCopy.splice(possibleFeatureIndex, 1));
 
   }
 
@@ -103,11 +136,10 @@ const createFeatures = () => {
 };
 
 const createPhotoPaths = () => {
-  const possiblePhotoPaths = ['https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/duonguyen-8LrGtIxxa4w.jpg'
-    , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg'
-    , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'];
 
-  let possiblePhotoPathsLength = possiblePhotoPaths.length;
+  const possiblePhotoPathsCopy = POSSIBLE_PHOTO_PATHS.slice();
+
+  let possiblePhotoPathsLength = possiblePhotoPathsCopy.length;
 
   const resultingPhotoPathsLength = getRandomInteger(1, possiblePhotoPathsLength);
 
@@ -117,104 +149,141 @@ const createPhotoPaths = () => {
 
     const possibleFeatureIndex = getRandomInteger(0, --possiblePhotoPathsLength);
 
-    photoPaths.push(possiblePhotoPaths.splice(possibleFeatureIndex, 1));
+    photoPaths.push(possiblePhotoPathsCopy.splice(possibleFeatureIndex, 1));
 
   }
 
   return photoPaths;
-};
-
-const createLocation = () => {
-
-  const location = {};
-
-  location.lat = getRandomFloat(35.65, 35.70);
-
-  location.lng = getRandomFloat(139.70, 139.80);
-
-  return location;
 
 };
 
-const createOffer = (maxPrice, maxRoomsNumber, maxGuestsNumber) => {
 
-  const offer = {};
+const createTitle = () => {
 
-  offer.title = 'Очень заманчивое предложение';
+  const titleIndex = getRandomInteger(0, TITLES_ARRAY.length - 1);
 
-  offer.address = '{{location.lat}}, {{location.lng}}';
-
-  offer.price = getRandomInteger(0, maxPrice);
-
-  offer.type = createType();
-
-  offer.rooms = getRandomInteger(0, maxRoomsNumber);
-
-  offer.guests = getRandomInteger(0, maxGuestsNumber);
-
-  offer.checkin = createChecks();
-
-  offer.checkout = createChecks();
-
-  offer.features = createFeatures();
-
-  offer.description = 'Свобода, равенство, братство - 3 в одном!';
-
-  offer.photos = createPhotoPaths();
-
-  return offer;
+  return `${TITLES_ARRAY[titleIndex]}`;
 
 };
 
-/* отладочная функция, eslinter ругается на console
+const createDescription = () => {
 
+  const descriptionsArrayCopy = DESCRIPTIONS_ARRAY.slice();
+
+  let descriptionsArrayLenght = descriptionsArrayCopy.length;
+
+  const itemsNumber = getRandomInteger(0, descriptionsArrayCopy.length - 1);
+
+  const descriptions = [];
+
+  for (let index = 0; index < itemsNumber; index++) {
+
+    const itemIndex = getRandomInteger(0, --descriptionsArrayLenght);
+
+    descriptions.push(descriptionsArrayCopy.splice(itemIndex, 1));
+
+  }
+
+  return descriptions.join(', ');
+
+};
+
+const createOfferForLocation = (location) => {
+
+  const offerTitle = createTitle();
+
+  return {
+
+    title: offerTitle,
+
+    address: `${location.lat},${location.lng}`,
+
+    price: getRandomInteger(0, MAX_PRICE),
+
+    type: createType(),
+
+    rooms: getRandomInteger(0, MAX_ROOMS_NUMBER),
+
+    guests: getRandomInteger(0, MAX_GUESTS_NUMBER),
+
+    checkin: createChecks(),
+
+    checkout: createChecks(),
+
+    features: createFeatures(),
+
+    description: `${offerTitle} : ${createDescription()}`,
+
+    photos: createPhotoPaths(),
+
+  };
+
+};
+
+// отладочная функция, eslinter ругается на console
+/*
 const outputData = (index, data) => {
 
-  console.log(`data [${index}]\n`);
+  try {
 
-  console.log(data.author);
+    console.log(`data [${index}]\n`);
 
-  console.log(data.offer);
+    console.log(data.author);
 
-  сonsole.log('photos:\n');
+    console.log(data.offer);
 
-  console.log(data.offer.photos);
+    сonsole.log('photos:\n');
 
-  console.log('features:\n');
+    console.log(data.offer.photos);
 
-  console.log(data.offer.features);
+    console.log('features:\n');
 
+    console.log(data.offer.features);
 
-  console.log(data.location);
+    console.log(data.location);
+
+  } catch (error) {
+
+    error.message;
+
+  }
 
 };
 */
 
-const createData = () => {
+const createOffers = () => {
 
-  const avatarNumbersArray = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
-
-  const data = [];
+  const offers = [];
 
   for (let index = 0; index < 10; index++) {
 
-    data[index] = {};
+    const userLocation = {
 
-    data[index].author = createRandomAuthor(avatarNumbersArray);
+      lat: getRandomFloat(35.65, 35.70, 2),
 
-    data[index].offer = createOffer(1000, 100, 100);
+      lng: getRandomFloat(139.70, 139.80, 2),
 
-    data[index].location = createLocation();
+    };
+
+    offers.push({
+
+      author: createRandomAuthor(),
+
+      offer: createOfferForLocation(userLocation),
+
+      location: userLocation,
+
+    });
 
     //вызов отладочной функцииб раскомментировать вызов и функцию при отладке
 
-    //outputData(index,data[index]);
+    //outputData(index, offers[index]);
 
   }
 
-  return data;
+  return offers;
 
 };
 
-createData();
+createOffers();
 
