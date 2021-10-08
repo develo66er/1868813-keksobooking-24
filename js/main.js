@@ -19,7 +19,12 @@ const DESCRIPTIONS_ARRAY = ['по выгодной цене',
 
 const AVATAR_NUMBERS_ARRAY = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
 
-const TYPES = ['palace', 'flat', 'house', 'bungalow', 'hotel'];
+const TITLES_TO_TYPES_MAP = new Map([['классная квартирка', 'flat'], ['шикарная квартирка в центре', 'flat'],
+  ['просторная квартира', 'flat'], ['1 комнатная квартира', 'flat'],
+  ['квартира- студия', 'flat'], ['просторный домик', 'house'],
+  ['дом почти даром', 'house'], ['дом с видом на парк', 'house'], ['двухэтажный дом', 'house'],
+  ['отель мечты', 'hotel'], ['шикарный дворец','palace'],
+  ['удобное бунгало', 'bungalow'], ['вип отель', 'hotel']]);
 
 const CHECKS = ['12:00', '13:00', '14:00'];
 
@@ -50,8 +55,6 @@ const getRandomInteger = (from, to) => {
   return Math.floor(Math.random() * (to - from + 1) + from);
 
 };
-
-getRandomInteger(0, 1);
 
 const getRandomFloat = (from, to, decimalPlacesNumber) => {
 
@@ -86,94 +89,30 @@ const shuffle = (array) => {
   }
 
 };
+const getArrayOfRandomLength = (array) => {
 
-const createType = () => {
+  const localArrayCopy = array.slice();
 
-  const typesCopy = TYPES.slice();
+  const itemsNumber = getRandomInteger(1, localArrayCopy.length);
 
-  const typeIndex = getRandomInteger(0, 4);
+  shuffle(localArrayCopy);
 
-  return typesCopy[typeIndex];
-
-};
-
-const createChecks = () => {
-
-  const checksCopy = CHECKS.slice();
-
-  const checkIndex = getRandomInteger(0, checksCopy.length - 1);
-
-  return checksCopy[checkIndex];
+  return localArrayCopy.splice(0, itemsNumber);
 
 };
 
-const createFeatures = () => {
+const getRandomArrayItem = (array) => {
 
-  const possibleFeaturesValuesCopy = POSSIBLE_FEATURE_VALUES.slice();
+  const localArrayCopy = array.slice();
 
-  const resultingFeaturesNumber = getRandomInteger(1, possibleFeaturesValuesCopy.length);
+  const typeIndex = getRandomInteger(0, localArrayCopy.length - 1);
 
-  shuffle(possibleFeaturesValuesCopy);
-
-  return possibleFeaturesValuesCopy.splice(0, resultingFeaturesNumber);
-
-};
-
-const createPhotoPaths = () => {
-
-  const possiblePhotoPathsCopy = POSSIBLE_PHOTO_PATHS.slice();
-
-  const resultingPhotoPathsNumber = getRandomInteger(1, possiblePhotoPathsCopy.length);
-
-  shuffle(possiblePhotoPathsCopy);
-
-  return possiblePhotoPathsCopy.splice(0, resultingPhotoPathsNumber);
-
-};
-
-
-const createTitle = () => {
-
-  const titleIndex = getRandomInteger(0, TITLES_ARRAY.length - 1);
-
-  return `${TITLES_ARRAY[titleIndex]}`;
-
-};
-
-const createDescription = () => {
-
-  const descriptionsArrayCopy = DESCRIPTIONS_ARRAY.slice();
-
-  const descriptionsItemsNumber = getRandomInteger(1, descriptionsArrayCopy.length);
-
-  shuffle(descriptionsArrayCopy);
-
-  return descriptionsArrayCopy.splice(0, descriptionsItemsNumber).join(', ');
-
-};
-
-const createOfferForLocation = (location) => {
-
-  const offerTitle = createTitle();
-
-  return {
-    title: offerTitle,
-    address: `${location.lat},${location.lng}`,
-    price: getRandomInteger(0, MAX_PRICE),
-    type: createType(),
-    rooms: getRandomInteger(0, MAX_ROOMS_NUMBER),
-    guests: getRandomInteger(0, MAX_GUESTS_NUMBER),
-    checkin: createChecks(),
-    checkout: createChecks(),
-    features: createFeatures(),
-    description: `${offerTitle} : ${createDescription()}`,
-    photos: createPhotoPaths(),
-  };
+  return localArrayCopy[typeIndex];
 
 };
 
 // отладочная функция, eslinter ругается на console
-/*
+
 const outputData = (index, data) => {
   try {
     console.log(`data [${index}]\n`);
@@ -189,7 +128,7 @@ const outputData = (index, data) => {
   }
 };
 
-*/
+
 const createOffers = () => {
 
   const offers = [];
@@ -202,18 +141,30 @@ const createOffers = () => {
       lat: getRandomFloat(35.65, 35.70, 2),
       lng: getRandomFloat(139.70, 139.80, 2),
     };
-    const randomAuthor = {
-      avatar: `img/avatars/user${AVATAR_NUMBERS_ARRAY[index]}.png`,
-    };
+    const offerTitle = getRandomArrayItem(TITLES_ARRAY);
     offers.push({
-      author: randomAuthor,
-      offer: createOfferForLocation(userLocation),
+      author: {
+        avatar: `img/avatars/user${AVATAR_NUMBERS_ARRAY[index]}.png`,
+      },
+      offer: {
+        title: offerTitle,
+        address: `${userLocation.lat},${userLocation.lng}`,
+        price: getRandomInteger(0, MAX_PRICE),
+        type: TITLES_TO_TYPES_MAP.get(offerTitle),
+        rooms: getRandomInteger(0, MAX_ROOMS_NUMBER),
+        guests: getRandomInteger(0, MAX_GUESTS_NUMBER),
+        checkin: getRandomArrayItem(CHECKS),
+        checkout: getRandomArrayItem(CHECKS),
+        features: getArrayOfRandomLength(POSSIBLE_FEATURE_VALUES),
+        description: `${offerTitle} : ${getArrayOfRandomLength(DESCRIPTIONS_ARRAY)}`,
+        photos: getArrayOfRandomLength(POSSIBLE_PHOTO_PATHS),
+      },
       location: userLocation,
     });
 
     //вызов отладочной функцииб раскомментировать вызов и функцию при отладке
 
-    //outputData(index, offers[index]);
+    outputData(index, offers[index]);
 
   }
 
