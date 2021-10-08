@@ -20,11 +20,11 @@ const DESCRIPTIONS_ARRAY = ['по выгодной цене',
 const AVATAR_NUMBERS_ARRAY = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
 
 const TITLES_TO_TYPES_MAP = new Map([['классная квартирка', 'flat'], ['шикарная квартирка в центре', 'flat'],
-  ['просторная квартира', 'flat'], ['1 комнатная квартира', 'flat'],
-  ['квартира- студия', 'flat'], ['просторный домик', 'house'],
-  ['дом почти даром', 'house'], ['дом с видом на парк', 'house'], ['двухэтажный дом', 'house'],
-  ['отель мечты', 'hotel'], ['шикарный дворец','palace'],
-  ['удобное бунгало', 'bungalow'], ['вип отель', 'hotel']]);
+['просторная квартира', 'flat'], ['1 комнатная квартира', 'flat'],
+['квартира- студия', 'flat'], ['просторный домик', 'house'],
+['дом почти даром', 'house'], ['дом с видом на парк', 'house'], ['двухэтажный дом', 'house'],
+['отель мечты', 'hotel'], ['шикарный дворец', 'palace'],
+['удобное бунгало', 'bungalow'], ['вип отель', 'hotel']]);
 
 const CHECKS = ['12:00', '13:00', '14:00'];
 
@@ -112,7 +112,7 @@ const getRandomArrayItem = (array) => {
 };
 
 // отладочная функция, eslinter ругается на console
-
+/*
 const outputData = (index, data) => {
   try {
     console.log(`data [${index}]\n`);
@@ -127,7 +127,7 @@ const outputData = (index, data) => {
     error.message;
   }
 };
-
+*/
 
 const createOffers = () => {
 
@@ -164,7 +164,7 @@ const createOffers = () => {
 
     //вызов отладочной функцииб раскомментировать вызов и функцию при отладке
 
-    outputData(index, offers[index]);
+    //outputData(index, offers[index]);
 
   }
 
