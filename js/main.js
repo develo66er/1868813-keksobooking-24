@@ -44,7 +44,7 @@ const getRandomInteger = (from, to) => {
   }
 
   if (from === to) {
-    return;
+    throw new Error('Начальное значение диапазона не может быть больше конечного');
   }
 
   return Math.floor(Math.random() * (to - from + 1) + from);
@@ -74,22 +74,16 @@ const getRandomFloat = (from, to, decimalPlacesNumber) => {
   const randomFloat = Math.random() * (to - from + 1) + from;
 
   return parseFloat(randomFloat.toFixed(decimalPlacesNumber));
-
 };
 
-getRandomFloat(1.2, 2, 2);
+const shuffle = (array) => {
 
-const createRandomAuthor = () => {
+  for (let index = array.length - 1; index > 0; index--) {
 
-  const index = getRandomInteger(0, AVATAR_NUMBERS_ARRAY.length - 1);
+    const jindex = Math.floor(Math.random() * (index + 1));
 
-  const number = AVATAR_NUMBERS_ARRAY.splice(index, 1);
-
-  return {
-
-    avatar: `img/avatars/user${number}.png`,
-
-  };
+    [array[index], array[jindex]] = [array[jindex], array[index]];
+  }
 
 };
 
@@ -107,7 +101,7 @@ const createChecks = () => {
 
   const checksCopy = CHECKS.slice();
 
-  const checkIndex = getRandomInteger(0, checksCopy.length-1);
+  const checkIndex = getRandomInteger(0, checksCopy.length - 1);
 
   return checksCopy[checkIndex];
 
@@ -117,21 +111,11 @@ const createFeatures = () => {
 
   const possibleFeaturesValuesCopy = POSSIBLE_FEATURE_VALUES.slice();
 
-  let possibleFeaturesLength = possibleFeaturesValuesCopy.length;
+  const resultingFeaturesNumber = getRandomInteger(1, possibleFeaturesValuesCopy.length);
 
-  const resultingFeaturesLength = getRandomInteger(1, 6);
+  shuffle(possibleFeaturesValuesCopy);
 
-  const features = [];
-
-  for (let index = 0; index < resultingFeaturesLength; index++) {
-
-    const possibleFeatureIndex = getRandomInteger(0, --possibleFeaturesLength);
-
-    features.push(possibleFeaturesValuesCopy.splice(possibleFeatureIndex, 1));
-
-  }
-
-  return features;
+  return possibleFeaturesValuesCopy.splice(0, resultingFeaturesNumber);
 
 };
 
@@ -139,21 +123,11 @@ const createPhotoPaths = () => {
 
   const possiblePhotoPathsCopy = POSSIBLE_PHOTO_PATHS.slice();
 
-  let possiblePhotoPathsLength = possiblePhotoPathsCopy.length;
+  const resultingPhotoPathsNumber = getRandomInteger(1, possiblePhotoPathsCopy.length);
 
-  const resultingPhotoPathsLength = getRandomInteger(1, possiblePhotoPathsLength);
+  shuffle(possiblePhotoPathsCopy);
 
-  const photoPaths = [];
-
-  for (let index = 0; index < resultingPhotoPathsLength; index++) {
-
-    const possibleFeatureIndex = getRandomInteger(0, --possiblePhotoPathsLength);
-
-    photoPaths.push(possiblePhotoPathsCopy.splice(possibleFeatureIndex, 1));
-
-  }
-
-  return photoPaths;
+  return possiblePhotoPathsCopy.splice(0, resultingPhotoPathsNumber);
 
 };
 
@@ -170,21 +144,11 @@ const createDescription = () => {
 
   const descriptionsArrayCopy = DESCRIPTIONS_ARRAY.slice();
 
-  let descriptionsArrayLenght = descriptionsArrayCopy.length;
+  const descriptionsItemsNumber = getRandomInteger(1, descriptionsArrayCopy.length);
 
-  const itemsNumber = getRandomInteger(0, descriptionsArrayCopy.length - 1);
+  shuffle(descriptionsArrayCopy);
 
-  const descriptions = [];
-
-  for (let index = 0; index < itemsNumber; index++) {
-
-    const itemIndex = getRandomInteger(0, --descriptionsArrayLenght);
-
-    descriptions.push(descriptionsArrayCopy.splice(itemIndex, 1));
-
-  }
-
-  return descriptions.join(', ');
+  return descriptionsArrayCopy.splice(0, descriptionsItemsNumber).join(', ');
 
 };
 
@@ -193,29 +157,17 @@ const createOfferForLocation = (location) => {
   const offerTitle = createTitle();
 
   return {
-
     title: offerTitle,
-
     address: `${location.lat},${location.lng}`,
-
     price: getRandomInteger(0, MAX_PRICE),
-
     type: createType(),
-
     rooms: getRandomInteger(0, MAX_ROOMS_NUMBER),
-
     guests: getRandomInteger(0, MAX_GUESTS_NUMBER),
-
     checkin: createChecks(),
-
     checkout: createChecks(),
-
     features: createFeatures(),
-
     description: `${offerTitle} : ${createDescription()}`,
-
     photos: createPhotoPaths(),
-
   };
 
 };
@@ -223,56 +175,40 @@ const createOfferForLocation = (location) => {
 // отладочная функция, eslinter ругается на console
 /*
 const outputData = (index, data) => {
-
   try {
-
     console.log(`data [${index}]\n`);
-
     console.log(data.author);
-
     console.log(data.offer);
-
     сonsole.log('photos:\n');
-
     console.log(data.offer.photos);
-
     console.log('features:\n');
-
     console.log(data.offer.features);
-
     console.log(data.location);
-
   } catch (error) {
-
     error.message;
-
   }
-
 };
-*/
 
+*/
 const createOffers = () => {
 
   const offers = [];
 
-  for (let index = 0; index < 10; index++) {
+  shuffle(AVATAR_NUMBERS_ARRAY);
+
+  for (let index = 0; index < AVATAR_NUMBERS_ARRAY.length; index++) {
 
     const userLocation = {
-
       lat: getRandomFloat(35.65, 35.70, 2),
-
       lng: getRandomFloat(139.70, 139.80, 2),
-
     };
-
+    const randomAuthor = {
+      avatar: `img/avatars/user${AVATAR_NUMBERS_ARRAY[index]}.png`,
+    };
     offers.push({
-
-      author: createRandomAuthor(),
-
+      author: randomAuthor,
       offer: createOfferForLocation(userLocation),
-
       location: userLocation,
-
     });
 
     //вызов отладочной функцииб раскомментировать вызов и функцию при отладке
@@ -286,4 +222,3 @@ const createOffers = () => {
 };
 
 createOffers();
-
