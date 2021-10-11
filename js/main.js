@@ -141,9 +141,11 @@ const createOffers = () => {
 
   const offers = [];
 
-  shuffle(AVATAR_NUMBERS);
+  const avatarNumbersCopy = AVATAR_NUMBERS.slice();
 
-  for (let index = 0; index < AVATAR_NUMBERS.length; index++) {
+  shuffle(avatarNumbersCopy);
+
+  for (let index = 0; index < avatarNumbersCopy.length; index++) {
 
     const userLocation = {
       lat: getRandomFloat(35.65, 35.70, 2),
@@ -152,7 +154,7 @@ const createOffers = () => {
     const offerTitle = getRandomArrayItem(TITLES);
     offers.push({
       author: {
-        avatar: `img/avatars/user${AVATAR_NUMBERS[index]}.png`,
+        avatar: `img/avatars/user${avatarNumbersCopy[index]}.png`,
       },
       offer: {
         title: offerTitle,
