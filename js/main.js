@@ -1,30 +1,38 @@
-
 const MAX_PRICE = 1000;
 
 const MAX_GUESTS_NUMBER = 100;
 
 const MAX_ROOMS_NUMBER = 100;
 
-const TITLES_ARRAY = ['классная квартирка', 'шикарная квартирка в центре',
+const TITLES = ['классная квартирка', 'шикарная квартирка в центре',
   'просторная квартира', '1 комнатная квартира',
   'квартира- студия', 'просторный домик',
   'дом почти даром', 'дом с видом на парк', 'двухэтажный дом',
   'отель мечты', 'шикарный дворец',
   'удобное бунгало', 'вип отель'];
 
-const DESCRIPTIONS_ARRAY = ['по выгодной цене',
+const DESCRIPTIONS = ['по выгодной цене',
   'красивый вид из окна', 'удобная и развитая инфраструктура',
   'рядом поликлиника, детский сад и школа', 'хорошие соседи',
   'рядом детская площадка и бассейн', 'спокойный район', 'чистый двор'];
 
-const AVATAR_NUMBERS_ARRAY = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
+const AVATAR_NUMBERS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
 
-const TITLES_TO_TYPES_MAP = new Map([['классная квартирка', 'flat'], ['шикарная квартирка в центре', 'flat'],
-['просторная квартира', 'flat'], ['1 комнатная квартира', 'flat'],
-['квартира- студия', 'flat'], ['просторный домик', 'house'],
-['дом почти даром', 'house'], ['дом с видом на парк', 'house'], ['двухэтажный дом', 'house'],
-['отель мечты', 'hotel'], ['шикарный дворец', 'palace'],
-['удобное бунгало', 'bungalow'], ['вип отель', 'hotel']]);
+const HouseTypes = {
+  Flat: 'flat',
+  House: 'house',
+  Hotel: 'hotel',
+  Palace: 'palace',
+  Bungalow: 'bungalow',
+};
+
+const TITLES_TO_TYPES = new Map([['классная квартирка', HouseTypes.Flat], ['шикарная квартирка в центре', HouseTypes.Flat],
+  ['просторная квартира', HouseTypes.Flat], ['1 комнатная квартира', HouseTypes.Flat],
+  ['квартира- студия', HouseTypes.Flat], ['просторный домик', HouseTypes.House],
+  ['дом почти даром', HouseTypes.House], ['дом с видом на парк', HouseTypes.House],
+  ['двухэтажный дом', HouseTypes.House],
+  ['отель мечты', HouseTypes.Hotel], ['шикарный дворец', HouseTypes.Palace],
+  ['удобное бунгало', HouseTypes.Bungalow], ['вип отель', HouseTypes.Hotel]]);
 
 const CHECKS = ['12:00', '13:00', '14:00'];
 
@@ -49,7 +57,7 @@ const getRandomInteger = (from, to) => {
   }
 
   if (from === to) {
-    throw new Error('Начальное значение диапазона не может быть больше конечного');
+    throw new Error('Начальное значение диапазона не может быть равно конечному');
   }
 
   return Math.floor(Math.random() * (to - from + 1) + from);
@@ -133,30 +141,30 @@ const createOffers = () => {
 
   const offers = [];
 
-  shuffle(AVATAR_NUMBERS_ARRAY);
+  shuffle(AVATAR_NUMBERS);
 
-  for (let index = 0; index < AVATAR_NUMBERS_ARRAY.length; index++) {
+  for (let index = 0; index < AVATAR_NUMBERS.length; index++) {
 
     const userLocation = {
       lat: getRandomFloat(35.65, 35.70, 2),
       lng: getRandomFloat(139.70, 139.80, 2),
     };
-    const offerTitle = getRandomArrayItem(TITLES_ARRAY);
+    const offerTitle = getRandomArrayItem(TITLES);
     offers.push({
       author: {
-        avatar: `img/avatars/user${AVATAR_NUMBERS_ARRAY[index]}.png`,
+        avatar: `img/avatars/user${AVATAR_NUMBERS[index]}.png`,
       },
       offer: {
         title: offerTitle,
         address: `${userLocation.lat},${userLocation.lng}`,
         price: getRandomInteger(0, MAX_PRICE),
-        type: TITLES_TO_TYPES_MAP.get(offerTitle),
+        type: TITLES_TO_TYPES.get(offerTitle),
         rooms: getRandomInteger(0, MAX_ROOMS_NUMBER),
         guests: getRandomInteger(0, MAX_GUESTS_NUMBER),
         checkin: getRandomArrayItem(CHECKS),
         checkout: getRandomArrayItem(CHECKS),
         features: getArrayOfRandomLength(POSSIBLE_FEATURE_VALUES),
-        description: `${offerTitle} : ${getArrayOfRandomLength(DESCRIPTIONS_ARRAY)}`,
+        description: `${offerTitle} : ${getArrayOfRandomLength(DESCRIPTIONS)}`,
         photos: getArrayOfRandomLength(POSSIBLE_PHOTO_PATHS),
       },
       location: userLocation,
