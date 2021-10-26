@@ -1,5 +1,10 @@
-import {getArrayOfRandomLength,getRandomArrayItem,getRandomFloat,getRandomInteger,shuffle} from './util';
-import {MAX_PRICE, MAX_GUESTS_NUMBER, MAX_ROOMS_NUMBER} from './config';
+import {getArrayOfRandomLength,getRandomArrayItem,getRandomFloat,getRandomInteger,shuffle} from './util.js';
+
+export const MAX_PRICE = 1000;
+
+export const MAX_GUESTS_NUMBER = 100;
+
+export const MAX_ROOMS_NUMBER = 100;
 
 
 const TITLES = ['классная квартирка', 'шикарная квартирка в центре',
@@ -40,25 +45,6 @@ const POSSIBLE_PHOTO_PATHS = ['https://assets.htmlacademy.ru/content/intensive/j
   , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/brandon-hoogenboom-SNxQGWxZQi0.jpg'
   , 'https://assets.htmlacademy.ru/content/intensive/javascript-1/keksobooking/claire-rendall-b6kAwr1i0Iw.jpg'];
 
-
-// отладочная функция, eslinter ругается на console
-/*
-const outputData = (index, data) => {
-  try {
-    console.log(`data [${index}]\n`);
-    console.log(data.author);
-    console.log(data.offer);
-    сonsole.log('photos:\n');
-    console.log(data.offer.photos);
-    console.log('features:\n');
-    console.log(data.offer.features);
-    console.log(data.location);
-  } catch (error) {
-    error.message;
-  }
-};
-*/
-
 export const createOffers = () => {
 
   const offers = [];
@@ -93,11 +79,6 @@ export const createOffers = () => {
       },
       location: userLocation,
     });
-
-    //вызов отладочной функцииб раскомментировать вызов и функцию при отладке
-
-    //outputData(index, offers[index]);
-
   }
 
   return offers;
