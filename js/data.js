@@ -1,11 +1,12 @@
 import {getArrayOfRandomLength,getRandomArrayItem,getRandomFloat,getRandomInteger,shuffle} from './util.js';
 
+import {HouseTypes} from './house-types.js';
+
 export const MAX_PRICE = 1000;
 
 export const MAX_GUESTS_NUMBER = 100;
 
 export const MAX_ROOMS_NUMBER = 100;
-
 
 const TITLES = ['классная квартирка', 'шикарная квартирка в центре',
   'просторная квартира', '1 комнатная квартира',
@@ -20,14 +21,6 @@ const DESCRIPTIONS = ['по выгодной цене',
   'рядом детская площадка и бассейн', 'спокойный район', 'чистый двор'];
 
 const AVATAR_NUMBERS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
-
-const HouseTypes = {
-  Flat: 'flat',
-  House: 'house',
-  Hotel: 'hotel',
-  Palace: 'palace',
-  Bungalow: 'bungalow',
-};
 
 const TITLES_TO_TYPES = new Map([['классная квартирка', HouseTypes.Flat], ['шикарная квартирка в центре', HouseTypes.Flat],
   ['просторная квартира', HouseTypes.Flat], ['1 комнатная квартира', HouseTypes.Flat],

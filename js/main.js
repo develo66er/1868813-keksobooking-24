@@ -1,6 +1,6 @@
 import {createOffers} from './data.js';
-
+import {renderPopup} from './template.js';
 const offers = createOffers();
-
-// eslint-disable-next-line no-console
-console.log(offers);
+const popup  = renderPopup(offers[0]);
+const mapCanvas = document.querySelector('#map-canvas');
+mapCanvas.appendChild(popup);

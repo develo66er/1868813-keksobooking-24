@@ -1,3 +1,4 @@
+import { HouseTypes } from './house-types.js';
 
 export const getRandomInteger = (from, to) => {
 
@@ -77,4 +78,18 @@ export const getRandomArrayItem = (array) => {
 
   return localArrayCopy[typeIndex];
 
+};
+export const getHouseTypeStringValue = (type) => {
+  switch (type) {
+    case HouseTypes.Bungalow:
+      return 'Бунгало';
+    case HouseTypes.Flat:
+      return 'Квартира';
+    case HouseTypes.Hotel:
+      return 'Отель';
+    case HouseTypes.House:
+      return 'Дом';
+    case HouseTypes.Palace:
+      return 'Дворец';
+  }
 };
