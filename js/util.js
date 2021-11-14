@@ -93,3 +93,73 @@ export const getHouseTypeStringValue = (type) => {
       return 'Дворец';
   }
 };
+/**
+    «Бунгало» — минимальная цена за ночь 0;
+    «Квартира» — минимальная цена за ночь 1 000;
+    «Отель» — минимальная цена за ночь 3 000;
+    «Дом» — минимальная цена 5 000;
+    «Дворец» — минимальная цена 10 000.} typeValue
+
+ */
+const getPriceByType  = (typeValue) => {
+  switch (typeValue) {
+    case 'bungalow' : {
+      return 0;
+    }
+    case 'flat' : {
+      return 1000;
+    }
+    case 'hotel' : {
+      return 3000;
+    }
+    case 'house' : {
+      return 5000;
+    }
+    case 'palace' : {
+      return 10000;
+    }
+  }
+};
+/**
+ *  1 комната — «для 1 гостя»;
+    2 комнаты — «для 2 гостей» или «для 1 гостя»;
+    3 комнаты — «для 3 гостей», «для 2 гостей» или «для 1 гостя»;
+    100 комнат — «не для гостей».
+ */
+const getCapacitiesForRoomNumber = (roomNumber)=>{
+  switch(roomNumber){
+    case '1' : return ['1'];
+    case '2' : return ['2','1'];
+    case '3' : return ['3','2','1'];
+    case '100': return ['0'];
+  }
+};
+
+export const updatePrice = (select,priceInput)=>{
+  const selectedTypeValue = select.value;
+  const price  = getPriceByType(selectedTypeValue);
+  priceInput.min = price;
+  priceInput.placeholder = price;
+};
+export const updateTimeOut = (timeOutSelect,timeInSelect)=>{
+  timeOutSelect.value = timeInSelect.value;
+};
+export const updateTimeIn = (timeInSelect,timeOutSelect)=>{
+  timeInSelect.value = timeOutSelect.value;
+};
+export const updateCapacity = (roomNumber,capacitySelect)=>{
+  capacitySelect.innerHTML = '';
+  const capacitiesArray = getCapacitiesForRoomNumber(roomNumber);
+  const optionsTemplate = document.querySelector('#capacityOptions').content;
+  const optionslist = optionsTemplate.querySelectorAll('option');
+  const fragment = document.createDocumentFragment();
+  optionslist.forEach((optionTemplate)=>{
+    const option = optionTemplate.cloneNode(true);
+    if(capacitiesArray.some((capacity)=>capacity===option.value)){
+      fragment.appendChild(option);
+    }
+  });
+  capacitySelect.appendChild(fragment);
+};
+
+
