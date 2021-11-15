@@ -1,25 +1,38 @@
 import { renderPopup } from './template.js';
+/**
+ * начальные значения координат
+ */
+const START_LAT = 35.72;
+const START_LNG = 139.73;
+
 let markerGroup;
-export const mapInit = (cb) => {
+
+const setAddress = (lat,lng)=>{
+  document.querySelector('#address').value = `${lat},${lng}`;
+};
+
+export const mapInit = (loadMapCallback) => {
   /**
      *Реализуйте отображение карты и дальнейший переход страницы в
      активное состояние после инициализации карты.
      */
   const map = L.map('map-canvas');
 
-  const startLat = 35.72;
-  const startLng = 139.73;
-
+  /**
+ * главная иконка
+ */
   const mainPinIcon = L.icon({
     iconUrl: './img/main-pin.svg',
     iconSize: [52, 52],
     iconAnchor: [26, 52],
   });
-
+  /**
+   * главный маркер
+   */
   const mainMarker = L.marker(
     {
-      lat: startLat,
-      lng: startLng,
+      lat: START_LAT,
+      lng: START_LNG,
     },
     {
       draggable: true,
@@ -29,17 +42,18 @@ export const mapInit = (cb) => {
 
   mainMarker.addTo(map);
 
-  document.querySelector('#address').value = `${startLat},${startLng}`;
+  setAddress(START_LAT,START_LNG);
+
   mainMarker.on('moveend', (evt) => {
     const latLng = evt.target.getLatLng();
-    document.querySelector('#address').value = `${latLng.lat.toFixed(2)},${latLng.lng.toFixed(2)}`;
+    setAddress(latLng.lat.toFixed(2),latLng.lng.toFixed(2));
   });
 
   map.on('load', () => {
-    cb();
+    loadMapCallback();
   }).setView({
-    lat: startLat,
-    lng: startLng,
+    lat: START_LAT,
+    lng: START_LNG,
   }, 10);
 
   L.tileLayer(
