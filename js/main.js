@@ -1,8 +1,6 @@
-import {createOffers} from './data.js';
-import {renderPopup} from './template.js';
-import {setFormInactive, setFormActive,validateForm,setupAdForm} from './form.js';
-
-//const popup  = renderPopup(offers[0]);
+import { createOffers } from './data.js';
+import { renderPopup } from './template.js';
+import { setFormInactive, setFormActive, validateForm, setupAdForm } from './form.js';
 /**
  * синхронизация полей формы
  */
@@ -48,10 +46,10 @@ const mainMarker = L.marker(
 );
 mainMarker.addTo(map);
 
-document.querySelector('#address').value  = `${startLat },${startLng}`;
+document.querySelector('#address').value = `${startLat},${startLng}`;
 mainMarker.on('moveend', (evt) => {
   const latLng = evt.target.getLatLng();
-  document.querySelector('#address').value  = `${latLng.lat.toFixed(2) },${latLng.lng.toFixed(2)}`;
+  document.querySelector('#address').value = `${latLng.lat.toFixed(2)},${latLng.lng.toFixed(2)}`;
 });
 
 map.on('load', () => {
@@ -75,39 +73,42 @@ L.tileLayer(
 const markerGroup = L.layerGroup().addTo(map);
 
 const createMarker = (point) => {
-  if(!point.offer
-    || !point.offer.address
-     || point.offer.address.split(',').lenght!==2){
-    throw new Error('Некорректные координаты для метки');
+  if (point.offer
+    && point.offer.address) {
+    const [lat, lng] = point.offer.address.split(',');
+    if (lat && lng) {
+      const icon = L.icon({
+        iconUrl: '../img/pin.svg',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+      });
+      const marker = L.marker(
+        {
+          lat,
+          lng,
+        },
+        {
+          icon,
+        },
+      );
+      const popup = renderPopup(point);
+      marker
+        .addTo(markerGroup).bindPopup(popup).on('click', () => {
+          createMarker(point);
+        });
+    } else {
+      throw new Error('Некорректные координаты для метки');
+    }
+  } else {
+    throw new Error('Отсутствуют координаты для метки');
   }
-  const [lat, lng] = point.offer.address.split(',');
-  const icon = L.icon({
-    iconUrl: '../img/pin.svg',
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-  });
-
-  const marker = L.marker(
-    {
-      lat,
-      lng,
-    },
-    {
-      icon,
-    },
-  );
-  const popup = renderPopup(point);
-  marker
-    .addTo(markerGroup).bindPopup(popup).on('click',()=>{
-      createMarker(point);
-    });
 };
 
 const offerArray = createOffers();
-offerArray.forEach((offerItem)=>{
-  try{
+offerArray.forEach((offerItem) => {
+  try {
     createMarker(offerItem);
-  }catch(error){
+  } catch (error) {
     // eslint-disable-next-line no-console
     console.log(error.message);
   }
