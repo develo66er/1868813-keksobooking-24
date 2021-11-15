@@ -40,7 +40,7 @@ export const numberInputHandler = (event) => {
   }
   const min = numberInput.min;
   const max = numberInput.max;
-  const value = numberInput.value;
+  const value = +numberInput.value;
   if (value<min) {
     handleMin(numberInput,min);
   }else if(value>max){
