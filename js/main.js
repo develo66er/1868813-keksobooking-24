@@ -36,6 +36,7 @@ const drawMapCallback = (offers)=>{
     }
   });
 };
+
 mapInitAsync()
   .then(()=>getDataAsync())
   .then((offers)=>drawMapCallback(offers))
