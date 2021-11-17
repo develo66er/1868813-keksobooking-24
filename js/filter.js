@@ -1,12 +1,12 @@
 const filters  = new Map([]);
 export const setupFiltersAsync = (action)=>new Promise((onSuccess)=>{
   const filtersForm = document.querySelector('.map__filters');
-  filtersForm.addEventListener('change',(e)=>{
+  filtersForm.addEventListener('change',(event)=>{
     // eslint-disable-next-line no-console
-    console.log(e.target.type);
-    const filterName = e.target.name.replace('housing-','');
-    const filterValue = e.target.value;
-    if(e.target.type!=='checkbox'){
+    console.log(event.target.type);
+    const filterName = event.target.name.replace('housing-','');
+    const filterValue = event.target.value;
+    if(event.target.type!=='checkbox'){
       filters.set(filterName,filterValue);
     }else{
       if(!filters.get(filterName)){
