@@ -1,10 +1,11 @@
-import { createOffers } from './data.js';
-import { setFormInactive, setFormActive, validateForm, setupAdForm } from './form.js';
-import {mapInit, createMarker} from './map.js';
+import { setFormInactive, setFormActiveAsync, validateFormAsync, initAdForm } from './form.js';
+import {mapInitAsync, createMarker,clearMap} from './map.js';
+import {getDataAsync} from './api.js';
+import {setupFiltersAsync} from './filter.js';
 /**
  * синхронизация полей формы
  */
-setupAdForm('ad-form');
+initAdForm('ad-form');
 /**
   * При открытии страница находится в неактивном состоянии:
   */
@@ -18,19 +19,36 @@ setFormInactive('ad-form');
   * на форму добавлен специальный класс, а на её интерактивные элементы атрибуты disabled.
   */
 setFormInactive('map__filters');
-mapInit(()=>{
-  setFormActive('ad-form');
-  setFormActive('map__filters');
-  //Добавление пользовательских валидаций формы ввода объявления
-  validateForm('.ad-form');
-});
+/**
+ * Форма, с помощью которой производится фильтрация похожих объявлений
+ * на момент открытия страницы, заблокирована и
+ * становится доступной только после окончания загрузки
+ *  всех похожих объявлений, которые в свою очередь начинают
+ * загружаться только после загрузки и успешной инициализации карты.
 
-const offers = createOffers();
-offers.forEach((offerItem) => {
-  try {
-    createMarker(offerItem);
-  } catch (error) {
+ */
+const drawMapCallback = (offers)=>{
+  offers.forEach((offerItem) => {
+    try {
+      createMarker(offerItem);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error.message);
+    }
+  });
+};
+mapInitAsync()
+  .then(()=>getDataAsync())
+  .then((offers)=>drawMapCallback(offers))
+  .then(()=>setFormActiveAsync('ad-form'))
+  .then(()=> validateFormAsync('ad-form'))
+  .then(()=> setFormActiveAsync('map__filters'))
+  .then(()=>setupFiltersAsync(()=>{
+    clearMap();
+    getDataAsync().then((offers)=>drawMapCallback(offers));
+  }))
+  .catch((error)=>{
     // eslint-disable-next-line no-console
     console.log(error.message);
-  }
-});
+  });
+

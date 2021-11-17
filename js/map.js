@@ -7,17 +7,16 @@ const START_LNG = 139.73;
 
 let markerGroup;
 
-const setAddress = (lat,lng)=>{
+export const setAddress = (lat,lng)=>{
   document.querySelector('#address').value = `${lat},${lng}`;
 };
+const map = L.map('map-canvas');
 
-export const mapInit = (loadMapCallback) => {
+export const mapInitAsync = ()=>new Promise((success) => {
   /**
      *Реализуйте отображение карты и дальнейший переход страницы в
      активное состояние после инициализации карты.
      */
-  const map = L.map('map-canvas');
-
   /**
  * главная иконка
  */
@@ -50,7 +49,7 @@ export const mapInit = (loadMapCallback) => {
   });
 
   map.on('load', () => {
-    loadMapCallback();
+    success();
   }).setView({
     lat: START_LAT,
     lng: START_LNG,
@@ -62,15 +61,14 @@ export const mapInit = (loadMapCallback) => {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
   ).addTo(map);
-
   markerGroup = L.layerGroup().addTo(map);
-
+});
+export const clearMap = ()=>{
+  markerGroup.clearLayers();
 };
-
 export const createMarker = (point) => {
-  if (point.offer
-        && point.offer.address) {
-    const [lat, lng] = point.offer.address.split(',');
+  if (point.location) {
+    const {lat, lng} = point.location;
     if (lat && lng) {
       const icon = L.icon({
         iconUrl: './img/pin.svg',
