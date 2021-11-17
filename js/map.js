@@ -7,7 +7,7 @@ const START_LNG = 139.73;
 
 let markerGroup;
 
-export const setAddress = (lat,lng)=>{
+const setAddress = (lat,lng)=>{
   document.querySelector('#address').value = `${lat},${lng}`;
 };
 const map = L.map('map-canvas');
