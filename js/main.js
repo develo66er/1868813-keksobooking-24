@@ -32,8 +32,7 @@ const drawMapCallback = (offers)=>{
     try {
       createMarker(offerItem);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log(error.message);
+      error.message;
     }
   });
 };
@@ -48,7 +47,6 @@ mapInitAsync()
     getDataAsync().then((offers)=>drawMapCallback(offers));
   }))
   .catch((error)=>{
-    // eslint-disable-next-line no-console
-    console.log(error.message);
+    error.message;
   });
 

@@ -8,8 +8,6 @@ const transformPrice = (value,price)=>{
   }
 };
 export const getDataAsync = ()=>new Promise((onSuccess,onError)=>{
-  // eslint-disable-next-line no-console
-  console.log('get data async');
   fetch('https://24.javascript.pages.academy/keksobooking/data')
     .then((result)=>result.json())
     .then((data)=>{
@@ -39,14 +37,10 @@ export const getDataAsync = ()=>new Promise((onSuccess,onError)=>{
         });
       }
       data = data.slice(0,10);
-      // eslint-disable-next-line no-console
-      console.log(data);
       onSuccess(data);
     })
     .catch((error)=>{
-      // eslint-disable-next-line no-console
-      console.log(error);
-      onError();
+      onError(error);
     });
 });
 
