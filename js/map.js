@@ -1,53 +1,30 @@
-import { renderPopup } from './template.js';
-/**
- * начальные значения координат
- */
-const START_LAT = 35.72;
-const START_LNG = 139.73;
+import { renderPopup, setAddress } from './template.js';
+import { mainMarkerMoveendHandler } from './handlers.js';
+import { START_LAT, START_LNG, MAIN_ICON, ICON } from './config.js';
 
-let markerGroup;
-
-const setAddress = (lat,lng)=>{
-  document.querySelector('#address').value = `${lat},${lng}`;
-};
 const map = L.map('map-canvas');
+const mainMarker = new Marker(START_LAT, START_LNG, MAIN_ICON);
+const markerGroup = L.layerGroup().addTo(map);
 
-export const mapInitAsync = ()=>new Promise((success) => {
-  /**
-     *Реализуйте отображение карты и дальнейший переход страницы в
-     активное состояние после инициализации карты.
-     */
-  /**
- * главная иконка
- */
-  const mainPinIcon = L.icon({
-    iconUrl: './img/main-pin.svg',
-    iconSize: [52, 52],
-    iconAnchor: [26, 52],
+function Marker(lat, lng, icon) {
+  const markerIcon = L.icon({
+    iconUrl: icon.url,
+    iconSize: [icon.width, icon.height],
+    iconAnchor: [icon.width / 2, icon.height],
   });
-  /**
-   * главный маркер
-   */
-  const mainMarker = L.marker(
+  return L.marker(
     {
-      lat: START_LAT,
-      lng: START_LNG,
+      lat: lat,
+      lng: lng,
     },
     {
-      draggable: true,
-      icon: mainPinIcon,
+      draggable: icon.draggable,
+      icon: markerIcon,
     },
   );
+}
 
-  mainMarker.addTo(map);
-
-  setAddress(START_LAT,START_LNG);
-
-  mainMarker.on('moveend', (evt) => {
-    const latLng = evt.target.getLatLng();
-    setAddress(latLng.lat.toFixed(2),latLng.lng.toFixed(2));
-  });
-
+const initMapAsync = () => new Promise((success) => {
   map.on('load', () => {
     success();
   }).setView({
@@ -55,39 +32,34 @@ export const mapInitAsync = ()=>new Promise((success) => {
     lng: START_LNG,
   }, 10);
 
+  mainMarker.addTo(map);
+
+  setAddress(START_LAT, START_LNG);
+
+  mainMarker.on('moveend', mainMarkerMoveendHandler);
+
   L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     },
   ).addTo(map);
-  markerGroup = L.layerGroup().addTo(map);
+
 });
-export const clearMap = ()=>{
+
+const clearMap = () => {
   markerGroup.clearLayers();
 };
-export const createMarker = (point) => {
+
+const createMarker = (point) => {
   if (point.location) {
-    const {lat, lng} = point.location;
+    const { lat, lng } = point.location;
     if (lat && lng) {
-      const icon = L.icon({
-        iconUrl: './img/pin.svg',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40],
-      });
-      const marker = L.marker(
-        {
-          lat,
-          lng,
-        },
-        {
-          icon,
-        },
-      );
+      const marker = new Marker(lat, lng, ICON);
       const popup = renderPopup(point);
       marker
         .addTo(markerGroup).bindPopup(popup).on('click', () => {
-          createMarker(point);
+          marker.openPopup();
         });
     } else {
       throw new Error('Некорректные координаты для метки');
@@ -96,3 +68,9 @@ export const createMarker = (point) => {
     throw new Error('Отсутствуют координаты для метки');
   }
 };
+
+const moveMainMarker = (lat, lng) => {
+  mainMarker.setLatLng(L.latLng([lat, lng]));
+};
+
+export { initMapAsync, clearMap, createMarker, moveMainMarker };

@@ -944,7 +944,19 @@ fieldset {
 
   background-color: rgba(0, 0, 0, 0.8);
 }
-
+.get-data_error{
+  width: 100%;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+.get-data_error button{
+  align-self: center;
+}
+.error__message{
+  margin: auto;
+}
 .success__message,
 .error__message {
   position: relative;
