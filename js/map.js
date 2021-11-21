@@ -2,10 +2,6 @@ import { renderPopup, setAddress } from './template.js';
 import { mainMarkerMoveendHandler } from './handlers.js';
 import { START_LAT, START_LNG, MAIN_ICON, ICON } from './config.js';
 
-const map = L.map('map-canvas');
-const mainMarker = new Marker(START_LAT, START_LNG, MAIN_ICON);
-const markerGroup = L.layerGroup().addTo(map);
-
 function Marker(lat, lng, icon) {
   const markerIcon = L.icon({
     iconUrl: icon.url,
@@ -23,6 +19,10 @@ function Marker(lat, lng, icon) {
     },
   );
 }
+
+const map = L.map('map-canvas');
+const mainMarker = new Marker(START_LAT, START_LNG, MAIN_ICON);
+const markerGroup = L.layerGroup().addTo(map);
 
 const initMapAsync = () => new Promise((success) => {
   map.on('load', () => {
