@@ -1,10 +1,10 @@
-const START_LAT = 35.72;
-const START_LNG = 139.73;
+const START_LAT = 35.68951;
+const START_LNG = 139.69171;
 const ADD_FORM_INIT_VALUES = new Map([
   ['title', ''],
   ['address', `${START_LAT},${START_LNG}`],
   ['type', 'flat'],
-  ['price', '1000'],
+  ['price', ''],
   ['timein', '12:00'],
   ['timeout', '12:00'],
   ['room_number', '1'],

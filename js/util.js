@@ -1,25 +1,39 @@
 import { HouseTypes } from './house-types.js';
 
+const ESC_ALL = 'Escape';
+const ESC_IE = 'Esc';
+
 const getHouseTypeStringValue = (type) => {
   switch (type) {
-    case HouseTypes.Bungalow:
+    case HouseTypes.BUNGALOW: {
       return 'Бунгало';
-    case HouseTypes.Flat:
+    }
+    case HouseTypes.FLAT: {
       return 'Квартира';
-    case HouseTypes.Hotel:
+    }
+    case HouseTypes.HOTEL: {
       return 'Отель';
-    case HouseTypes.House:
+    }
+    case HouseTypes.HOUSE: {
       return 'Дом';
-    case HouseTypes.Palace:
+    }
+    case HouseTypes.PALACE: {
       return 'Дворец';
+    }
   }
 };
 
 const transformPrice = (value, price) => {
   switch (price) {
-    case 'low': return value < 10000;
-    case 'middle': return value >= 10000 && value < 50000;
-    case 'high': return value >= 50000;
+    case 'low': {
+      return value < 10000;
+    }
+    case 'middle': {
+      return value >= 10000 && value < 50000;
+    }
+    case 'high': {
+      return value >= 50000;
+    }
   }
 };
 
@@ -29,4 +43,20 @@ const setupOfferType = (offer) => {
   }
 
 };
-export { getHouseTypeStringValue, setupOfferType, transformPrice };
+const isEscape = (key) => key === ESC_ALL || key === ESC_IE;
+
+const debounce = (func, wait) => {
+  let timeout;
+
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+export { getHouseTypeStringValue, setupOfferType, transformPrice, isEscape, debounce };

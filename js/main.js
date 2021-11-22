@@ -1,15 +1,14 @@
-import { setFormInactive, setFormActive, setupValidation } from './form.js';
+import { setupFormInactiveState} from './form.js';
 import { initMapAsync } from './map.js';
 import { setInitState } from './page.js';
 
-setFormInactive('ad-form');
-setFormInactive('map__filters');
+setupFormInactiveState('ad-form',true);
+setupFormInactiveState('map__filters',true);
 initMapAsync()
   .then(() => {
-    setupValidation('ad-form');
     setInitState();
-    setFormActive('ad-form');
-    setFormActive('map__filters');
+    setupFormInactiveState('ad-form',false);
+    setupFormInactiveState('map__filters',false);
   })
   .catch((error) => {
     error.message;

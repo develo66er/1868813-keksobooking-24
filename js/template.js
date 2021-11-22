@@ -6,10 +6,18 @@ import {
 
 const getCapacitiesForRoomNumber = (roomNumber) => {
   switch (roomNumber) {
-    case '1': return ['1'];
-    case '2': return ['2', '1'];
-    case '3': return ['3', '2', '1'];
-    case '100': return ['0'];
+    case '1': {
+      return ['1'];
+    }
+    case '2': {
+      return ['2', '1'];
+    }
+    case '3': {
+      return ['3', '2', '1'];
+    }
+    case '100': {
+      return ['0'];
+    }
   }
 };
 
@@ -129,6 +137,8 @@ const renderPopup = (data) => {
 };
 
 const setAddress = (lat, lng) => {
+  lat = lat.toFixed(5);
+  lng = lng.toFixed(5);
   document.querySelector('#address').value = `${lat},${lng}`;
 };
 
@@ -136,7 +146,6 @@ const updatePrice = (type, priceInput) => {
   const price = getPriceByType(type);
   priceInput.min = price;
   priceInput.placeholder = price;
-  priceInput.value = '';
 };
 
 const updateTimeOut = (timeOutSelect, timeInSelect) => {
@@ -172,10 +181,11 @@ const outputFormSendSuccessMessage = () => {
 
 };
 
-const outputFormSendErrorMessage = () => {
+const outputFormSendErrorMessage = (message) => {
   const body = document.querySelector('body');
   const errorMessageTemplate = document.querySelector('#error').content;
   const error = errorMessageTemplate.querySelector('.error').cloneNode(true);
+  error.querySelector('.error__message').innerHTML = message;
   body.insertAdjacentElement('beforeend', error);
   const errorButton = error.querySelector('.error__button');
   errorButton.addEventListener('click', addDataSendErrorHandler);
@@ -183,8 +193,9 @@ const outputFormSendErrorMessage = () => {
   document.addEventListener('keydown', addDataSendErrorHandler);
 };
 
-const outputGetAddDataErrorMessage = () => {
+const outputGetAddDataErrorMessage = (message) => {
   const errorMessage = document.querySelector('.get-data_error');
+  errorMessage.querySelector('.error__message').textContent = message;
   const mapCanvas = document.querySelector('#map-canvas');
   mapCanvas.classList.add('hidden');
   errorMessage.classList.remove('hidden');

@@ -54,16 +54,12 @@ const clearMap = () => {
 const createMarker = (point) => {
   if (point.location) {
     const { lat, lng } = point.location;
-    if (lat && lng) {
-      const marker = new Marker(lat, lng, ICON);
-      const popup = renderPopup(point);
-      marker
-        .addTo(markerGroup).bindPopup(popup).on('click', () => {
-          marker.openPopup();
-        });
-    } else {
-      throw new Error('Некорректные координаты для метки');
-    }
+    const marker = new Marker(lat, lng, ICON);
+    const popup = renderPopup(point);
+    marker
+      .addTo(markerGroup).bindPopup(popup).on('click', () => {
+        marker.openPopup();
+      });
   } else {
     throw new Error('Отсутствуют координаты для метки');
   }

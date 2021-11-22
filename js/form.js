@@ -1,66 +1,93 @@
 import {
-  textAreaInputHandler, numberInputHandler,
   typeSelectHandler, timeInSelectHandler,
   timeOutSelectHandler, roomNumberSelectHandler,
-  addFormSubmitHandler, addFormResetHandler,
-  addPhotoUploadHandler, avatarUploadHandler
+  addPhotoUploadHandler, avatarUploadHandler,filterFormChangeHandler
 } from './handlers.js';
 import {
   updatePrice, updateTimeOut, updateCapacity,
   clearAddImages, clearAvatarImage
 } from './template.js';
+import {postData} from './api.js';
 import { ADD_FORM_INIT_VALUES } from './config.js';
 
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
+const titleInput = document.querySelector('#title');
+const priceInput = document.querySelector('#price');
+const addForm = document.querySelector('.ad-form');
+titleInput.style.border = '3px solid red';
+priceInput.style.border = '3px solid red';
 
-const setFormInactive = (formClassName) => {
+const setupFormInactiveState = (formClassName,disabled)=>{
   const form = document.querySelector(`.${formClassName}`);
-  /**
-     * Форма заполнения информации об объявлении .${formClassName} содержит класс ${formClassName}--disabled;
-     */
-  form.classList.add(`${formClassName}--disabled`);
-  /**
-     * Все интерактивные элементы формы .${formClassName} должны быть заблокированы
-     * с помощью атрибута disabled,
-     *  добавленного на них или на их родительские блоки fieldset;
-     */
+  if(disabled){
+    form.classList.add(`${formClassName}--disabled`);
+  }else{
+    form.classList.remove(`${formClassName}--disabled`);
+  }
   const fieldsetList = form.querySelectorAll('fieldset');
-  form.querySelectorAll('select').forEach((select) => select.disabled = true);
-  form.querySelectorAll('input').forEach((select) => select.disabled = true);
-  form.querySelectorAll('button').forEach((select) => select.disabled = true);
+  form.querySelectorAll('select').forEach((select) => select.disabled = disabled);
+  form.querySelectorAll('input').forEach((select) => select.disabled = disabled);
+  form.querySelectorAll('button').forEach((select) => select.disabled = disabled);
   fieldsetList.forEach((fieldset) => {
-    fieldset.disabled = true;
+    fieldset.disabled = disabled;
   });
 };
 
-const setFormActive = (formClassName) => {
-  const form = document.querySelector(`.${formClassName}`);
-  /**
-       * Форма заполнения информации об объявлении .${formClassName} содержит класс ${formClassName}--disabled;
-       */
-  form.classList.remove(`${formClassName}--disabled`);
-  /**
-       * Все интерактивные элементы формы .${formClassName} должны быть разблокированы
-       * с помощью атрибута disabled=false,
-       *  добавленного на них или на их родительские блоки fieldset;
-       */
-  const fieldsetList = form.querySelectorAll('fieldset');
-  form.querySelectorAll('select').forEach((select) => select.disabled = false);
-  form.querySelectorAll('input').forEach((select) => select.disabled = false);
-  form.querySelectorAll('button').forEach((select) => select.disabled = false);
-  fieldsetList.forEach((fieldset) => {
-    fieldset.disabled = false;
-  });
-};
+titleInput.addEventListener('invalid', () => {
+  titleInput.style.border = '3px solid red';
+  if (titleInput.validity.valueMissing) {
+    titleInput.setCustomValidity('Обязательное поле');
+  } else {
+    titleInput.setCustomValidity('');
+  }
+});
 
-const setupValidation = (formSelector) => {
-  const requiredFields = document.querySelector(`.${formSelector}`).querySelectorAll('[required]');
-  requiredFields.forEach((input) => {
-    const type = input.type;
-    if (type === 'textarea') {
-      input.addEventListener('input', textAreaInputHandler);
-    } else if (type === 'number') {
-      input.addEventListener('input', numberInputHandler);
-    }
+titleInput.addEventListener('input', () => {
+  const valueLength = titleInput.value.length;
+  if (valueLength < MIN_TITLE_LENGTH) {
+    titleInput.setCustomValidity(`Ещё ${  MIN_TITLE_LENGTH - valueLength } симв.`);
+  } else if (valueLength > MAX_TITLE_LENGTH) {
+    titleInput.setCustomValidity(`Удалите лишние ${  valueLength - MAX_TITLE_LENGTH } симв.`);
+  } else {
+    titleInput.style.border = 'none';
+    titleInput.setCustomValidity('');
+  }
+  titleInput.reportValidity();
+});
+
+priceInput.addEventListener('invalid', () => {
+  priceInput.style.border = '3px solid red';
+  if (priceInput.validity.valueMissing) {
+    priceInput.setCustomValidity('Обязательное поле');
+  } else {
+    priceInput.setCustomValidity('');
+  }
+});
+
+priceInput.addEventListener('input', () => {
+  const value = +priceInput.value;
+  const priceMin = priceInput.min;
+  const priceMax = priceInput.max;
+  priceInput.style.border = 'none';
+  if (value < priceMin) {
+    priceInput.setCustomValidity(`Значение поля не может быть меньше ${priceMin}.`);
+  } else if (value > priceMax) {
+    priceInput.setCustomValidity(`Значение поля не может быть больше ${priceMax}.`);
+  } else {
+    priceInput.setCustomValidity('');
+  }
+  priceInput.reportValidity();
+});
+
+const setAddFormSubmit = (onSuccess,onError)=>{
+  addForm.addEventListener('submit',(evt)=>{
+    evt.preventDefault();
+    postData(
+      () => onSuccess(),
+      (message) => onError(message),
+      new FormData(evt.target),
+    );
   });
 };
 
@@ -80,7 +107,6 @@ const setupAdForm = () => {
   resetFeatures(form, '#features');
   const typeSelect = form.querySelector('#type');
   typeSelect.value = 'flat';
-  const priceInput = form.querySelector('#price');
   updatePrice('flat', priceInput);
   const timeInSelect = form.querySelector('#timein');
   const timeOutSelect = form.querySelector('#timeout');
@@ -103,8 +129,6 @@ const setupAdForm = () => {
   timeOutSelect.addEventListener('change', timeOutSelectHandler);
   typeSelect.addEventListener('change', typeSelectHandler);
   roomNumberSelect.addEventListener('change', roomNumberSelectHandler);
-  form.addEventListener('submit', addFormSubmitHandler);
-  form.addEventListener('reset', addFormResetHandler);
 };
 
 const setupFilterForm = () => {
@@ -113,7 +137,8 @@ const setupFilterForm = () => {
     select.value = 'any';
   });
   resetFeatures(form, '#housing-features');
+  form.addEventListener('change',filterFormChangeHandler);
 };
 
-export { setFormInactive, setFormActive, setupValidation, setupAdForm, setupFilterForm };
+export {setupFormInactiveState, setAddFormSubmit, setupAdForm, setupFilterForm };
 

@@ -1,70 +1,18 @@
 import {
   updatePrice, updateTimeOut, updateTimeIn, updateCapacity, setAddress,
-  outputFormSendSuccessMessage, outputFormSendErrorMessage, outputGetAddDataErrorMessage
+  outputFormSendSuccessMessage, outputGetAddDataErrorMessage
 } from './template.js';
-import { getData, postData } from './api.js';
-import { setInitState, setFailedState } from './page.js';
-import { getFiltersView, setFilter, getFilter, clearFilters } from './filter.js';
-import { transformPrice, setupOfferType } from './util.js';
+import { getData } from './api.js';
+import { setInitState, resetState } from './page.js';
+import { transformPrice, setupOfferType, isEscape } from './util.js';
 import { createMarker, clearMap } from './map.js';
-
-const handleMinLen = (input, gap) => {
-  input.setCustomValidity(`Не хватает ${gap} симв.`);
-};
-
-const handleMaxLen = (input, max) => {
-  input.setCustomValidity(`Вы можете ввести не более ${max} симв.`);
-};
-
-const handleMin = (input, min) => {
-  input.setCustomValidity(`Значение не может быть меньше ${min}.`);
-};
-
-const handleMax = (input, max) => {
-  input.setCustomValidity(`Значение не может быть больше ${max}.`);
-};
-
-const handleNoErrors = (input) => {
-  input.setCustomValidity('');
-};
-
-const textAreaInputHandler = (event) => {
-  const textAreaInput = event.target;
-  const minLength = textAreaInput.minLength;
-  const maxLength = textAreaInput.maxLength;
-  const valueLength = textAreaInput.value.length;
-  if (valueLength < minLength) {
-    handleMinLen(textAreaInput, minLength - valueLength);
-  } else if (valueLength >= maxLength) {
-    handleMaxLen(textAreaInput, maxLength);
-  } else {
-    handleNoErrors(textAreaInput);
-  }
-  textAreaInput.reportValidity();
-};
-
-const numberInputHandler = (event) => {
-  const numberInput = event.target;
-  if (numberInput.type !== 'number') {
-    return;
-  }
-  const min = numberInput.min;
-  const max = numberInput.max;
-  const value = +numberInput.value;
-  if (value < min) {
-    handleMin(numberInput, min);
-  } else if (value > max) {
-    handleMax(numberInput, max);
-  } else {
-    handleNoErrors(numberInput);
-  }
-  numberInput.reportValidity();
-};
 
 const typeSelectHandler = (event) => {
   const select = event.target;
   const priceInput = select.form.querySelector('#price');
   updatePrice(select.value, priceInput);
+  priceInput.style.border = 'none';
+  priceInput.reportValidity();
 };
 
 const timeInSelectHandler = (event) => {
@@ -87,15 +35,9 @@ const roomNumberSelectHandler = (event) => {
 
 const mainMarkerMoveendHandler = (evt) => {
   const latLng = evt.target.getLatLng();
-  setAddress(latLng.lat.toFixed(2), latLng.lng.toFixed(2));
-};
-
-const sendAddData = (form) => {
-  const body = new FormData(form);
-  postData(body)
-    .then(() =>
-      outputFormSendSuccessMessage())
-    .catch(() => outputFormSendErrorMessage());
+  const lat = latLng.lat;
+  const lng = latLng.lng;
+  setAddress(lat, lng);
 };
 
 const drawMap = (offers) => {
@@ -109,71 +51,53 @@ const drawMap = (offers) => {
   });
 };
 
-const getAddData = () => getData(outputGetAddDataErrorMessage)
-  .then((result) => result.json())
-  .then((data) => {
-    const filters = getFiltersView();
-    if (filters.size > 0) {
-      filters.forEach((filterValue, filterKey) => {
-        if (Array.isArray(filterValue)) {
-          data = data.filter((offerItem) => {
-            if (!offerItem.offer[filterKey]) {
-              return false;
-            }
-            return filterValue.every((elem) => offerItem.offer[filterKey].includes(elem));
-          });
-        } else if (filterValue !== 'any') {
-          data = data.filter((offerItem) => {
-            if (!isNaN(+filterValue)) {
-              filterValue = +filterValue;
-            } else if (filterKey === 'price') {
-              return transformPrice(offerItem.offer[filterKey], filterValue);
-            }
-            return offerItem.offer[filterKey] === filterValue;
-          });
-        }
-      });
-    }
-    return data = data.slice(0, Math.min(data.length, 10));
-  })
-  .then((offers) => {
-    drawMap(offers);
-  })
-  .catch(() => {
-    setFailedState();
-    outputGetAddDataErrorMessage();
-  });
-
-const addFormSubmitHandler = (evt) => {
-  evt.preventDefault();
-  sendAddData(evt.target);
-  clearFilters();
-  setInitState();
+const filterByType = (type,typeValue) => (typeValue === 'any') || (type === typeValue);
+const filterByPrice = (price,priceValue) => (priceValue === 'any') || (transformPrice(price, priceValue));
+const filterByRoomsNumber = (roomsNumber,roomsValue) => (roomsValue === 'any') || (roomsNumber === roomsValue);
+const filterByGuestsNumber = (guestsNumber,guestsValue) => (guestsValue === 'any') || (guestsNumber === guestsValue);
+const filterByFeatures = (features,featuresValues) => {
+  if(!features){
+    return false;
+  }
+  return (!featuresValues || featuresValues.length === 0) || (featuresValues.every((elem) => features.includes(elem)));
 };
+
+const getAddData = () => getData((json) => {
+  json.then((data) => {
+    const dataItems = [];
+    const typeValue = document.querySelector('#housing-type').value;
+    const priceValue = document.querySelector('#housing-price').value;
+    const roomsValue = document.querySelector('#housing-rooms').value;
+    const guestsValue = document.querySelector('#housing-guests').value;
+    const features = Array.from(document.querySelectorAll('#housing-features input[type="checkbox"]'));
+    const featuresValues = features.map((feature)=>feature.value);
+    for (let i = 0; dataItems.length < 10 && i < data.length; i++) {
+      const byType = filterByType(data[i].offer.type,typeValue);
+      const byPrice = filterByPrice(data[i].offer.price,priceValue);
+      const byRoomsNumber = filterByRoomsNumber(data[i].offer.rooms,roomsValue);
+      const byGuestsNumber = filterByGuestsNumber(data[i].offer.guests,guestsValue);
+      const byFeatures = filterByFeatures(data[i].offer.features,featuresValues);
+      if (byType && byPrice
+        && byRoomsNumber
+        && byGuestsNumber
+        && byFeatures) {
+        dataItems.push(data[i]);
+      }
+    }
+    return dataItems;
+  }).then((offers) => {
+    drawMap(offers);
+  }).catch(() => {
+    outputGetAddDataErrorMessage('данные полученны не были');
+  });
+}, outputGetAddDataErrorMessage);
 
 const addFormResetHandler = (evt) => {
   evt.preventDefault();
-  clearFilters();
   setInitState();
 };
-const filterFormChangeHandler = (event) => {
-  const filterName = event.target.name.replace('housing-', '');
-  const filterValue = event.target.value;
-  if (event.target.type !== 'checkbox') {
-    setFilter(filterName, filterValue);
-  } else {
-    if (!getFilter(filterName)) {
-      setFilter(filterName, [filterValue]);
-    } else {
-      if (getFilter(filterName).includes(filterValue)) {
-        const index = getFilter(filterName).indexOf(filterValue);
-        getFilter(filterName).splice(index, 1);
-      } else {
-        const features = getFilter(filterName);
-        setFilter(filterName, [filterValue, ...features]);
-      }
-    }
-  }
+
+const filterFormChangeHandler = () => {
   clearMap();
   getAddData();
 };
@@ -199,7 +123,10 @@ const avatarUploadHandler = (event) => {
     image.src = window.URL.createObjectURL(files[0]);
   }
 };
-
+const outputFormSendSuccessMessageHandler = () => {
+  outputFormSendSuccessMessage();
+  resetState();
+};
 const removeSuccessPopup = () => {
   const success = document.querySelector('.success');
   success.remove();
@@ -211,21 +138,18 @@ const removeErrorPopup = () => {
 };
 
 const addDataSendSuccessHandler = (evt) => {
-  if (evt.type === 'click') {
+  if (evt.type === 'click' || (evt.type === 'keydown' && isEscape(evt.key))) {
     document.removeEventListener('click', addDataSendSuccessHandler);
-    removeSuccessPopup();
-  } else if (evt.type === 'keydown' && evt.key === 'Escape') {
     document.removeEventListener('keydown', addDataSendSuccessHandler);
     removeSuccessPopup();
   }
 };
 
 const addDataSendErrorHandler = (evt) => {
-  if (evt.type === 'click') {
-    document.removeEventListener('click', addDataSendErrorHandler);
-    removeErrorPopup();
-  } else if (evt.type === 'keydown' && evt.key === 'Escape') {
+  if (evt.type === 'click' || (evt.type === 'keydown' && isEscape(evt.key))) {
     document.removeEventListener('keydown', addDataSendErrorHandler);
+    document.removeEventListener('click', addDataSendErrorHandler);
+    document.querySelector('.error__button').removeEventListener('click', addDataSendErrorHandler);
     removeErrorPopup();
   }
 };
@@ -240,12 +164,12 @@ const addDataGetErrorHandler = () => {
 };
 
 export {
-  textAreaInputHandler,
-  numberInputHandler, typeSelectHandler,
+  typeSelectHandler,
   timeInSelectHandler, timeOutSelectHandler,
   roomNumberSelectHandler, mainMarkerMoveendHandler,
-  addFormSubmitHandler, addFormResetHandler, getAddData,
+  addFormResetHandler, getAddData,
   filterFormChangeHandler, addPhotoUploadHandler,
   avatarUploadHandler, addDataSendSuccessHandler,
-  addDataSendErrorHandler, addDataGetErrorHandler
+  addDataSendErrorHandler, addDataGetErrorHandler,
+  outputFormSendSuccessMessageHandler
 };
