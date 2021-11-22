@@ -71,17 +71,17 @@ const getAddData = () => getData((json) => {
     const guestsValue = document.querySelector('#housing-guests').value;
     const features = Array.from(document.querySelectorAll('#housing-features input[type="checkbox"]'));
     const featuresValues = features.map((feature)=>feature.value);
-    for (let i = 0; dataItems.length < 10 && i < data.length; i++) {
-      const byType = filterByType(data[i].offer.type,typeValue);
-      const byPrice = filterByPrice(data[i].offer.price,priceValue);
-      const byRoomsNumber = filterByRoomsNumber(data[i].offer.rooms,roomsValue);
-      const byGuestsNumber = filterByGuestsNumber(data[i].offer.guests,guestsValue);
-      const byFeatures = filterByFeatures(data[i].offer.features,featuresValues);
+    for (let index = 0; dataItems.length < 10 && index < data.length; index++) {
+      const byType = filterByType(data[index].offer.type,typeValue);
+      const byPrice = filterByPrice(data[index].offer.price,priceValue);
+      const byRoomsNumber = filterByRoomsNumber(data[index].offer.rooms,roomsValue);
+      const byGuestsNumber = filterByGuestsNumber(data[index].offer.guests,guestsValue);
+      const byFeatures = filterByFeatures(data[index].offer.features,featuresValues);
       if (byType && byPrice
         && byRoomsNumber
         && byGuestsNumber
         && byFeatures) {
-        dataItems.push(data[i]);
+        dataItems.push(data[index]);
       }
     }
     return dataItems;
